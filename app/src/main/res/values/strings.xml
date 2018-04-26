@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">SensorsReader</string>
+    <string name="check_start_stop">Start/Stop</string>
+    <string name="type_accelerometer">accelerometer</string>
+    <string name="type_gyroscope">gyroscope</string>
+    <string name="type_gravity">gravity</string>
+
+    <string name="could_not_access">Не удалось получить досступ к сенсорам</string>
+    <string name="could_not_data">Не удалось получить данные</string>
+
+
+
+
+</resources>
