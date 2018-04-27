@@ -26,6 +26,7 @@ public class DataCollectonService extends Service implements SensorEventListener
     private static List<Integer> fragmentList = new ArrayList<>();
     private boolean run;
     private ArrayList<Integer> valuesNumbers;
+    private ArrayList<String> types;
 
     private static List<PublishSubject<float[]>> publishSubjectList = new ArrayList<>();
 
@@ -42,7 +43,8 @@ public class DataCollectonService extends Service implements SensorEventListener
 
     public native float[] getAv(List<float[]> dataList, int size);
 
-    public DataCollectonService() { }
+    public DataCollectonService() {
+    }
 
     @Override
     public void onCreate() {
@@ -63,7 +65,7 @@ public class DataCollectonService extends Service implements SensorEventListener
         run = true;
         dataList = new ArrayList<>();
 
-        ArrayList<String> types = intent.getStringArrayListExtra(INTENT_KEY_TYPES);
+        types = intent.getStringArrayListExtra(INTENT_KEY_TYPES);
         valuesNumbers = intent.getIntegerArrayListExtra(INTENT_KEY_NUMBERS);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -90,8 +92,8 @@ public class DataCollectonService extends Service implements SensorEventListener
         } else {
             Toast.makeText(this, getResources().getString(R.string.could_not_access), Toast.LENGTH_SHORT).show();
         }
+        calculateAverageValue();
 
-        delayedLaunch();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -115,21 +117,6 @@ public class DataCollectonService extends Service implements SensorEventListener
         });
     }
 
-    private void delayedLaunch() {
-        final Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                    calculateAverageValue();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
     void sendData(int i) {
         int size = valuesNumbers.get(i);
         float[] buf = getAv(dataList.get(i), size);
@@ -141,16 +128,16 @@ public class DataCollectonService extends Service implements SensorEventListener
     public void onSensorChanged(SensorEvent event) {
         switch (event.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
-                dataList.get(0).add(event.values.clone());
+                dataList.get(types.indexOf("accelerometer")).add(event.values.clone());
                 break;
             case Sensor.TYPE_GYROSCOPE:
-                dataList.get(1).add(event.values.clone());
+                dataList.get(types.indexOf("gyroscope")).add(event.values.clone());
                 break;
             case Sensor.TYPE_GRAVITY:
-                dataList.get(2).add(event.values.clone());
+                dataList.get(types.indexOf("gravity")).add(event.values.clone());
                 break;
             case Sensor.TYPE_LIGHT:
-                dataList.get(3).add(event.values.clone());
+                dataList.get(types.indexOf("light")).add(event.values.clone());
                 break;
         }
 
@@ -158,6 +145,5 @@ public class DataCollectonService extends Service implements SensorEventListener
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 }

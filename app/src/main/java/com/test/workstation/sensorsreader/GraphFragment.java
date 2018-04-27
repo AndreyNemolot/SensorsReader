@@ -110,6 +110,7 @@ public class GraphFragment extends Fragment {
                 setDataOnGraph();
                 x++;
             }
+
             @Override
             public void onError(Throwable e) {
                 Log.e("TAG", "onError: ", e);

@@ -21,10 +21,10 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout container;
     private ArrayList<LinearLayout> linearLayouts;
+    ArrayList<String> sensorTypes;
 
-    int screenWidth;
-    int screenHeight;
-
+    private int screenWidth;
+    private int screenHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,16 +32,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         container = findViewById(R.id.mainLayout);
 
-        ArrayList<String> sensorTypes = new ArrayList<>();
+        sensorTypes = new ArrayList<>();
         sensorTypes.add(getResources().getString(R.string.type_accelerometer));
-        sensorTypes.add(getResources().getString(R.string.type_gravity));
         sensorTypes.add(getResources().getString(R.string.type_gyroscope));
-        sensorTypes.add("light");
+        sensorTypes.add(getResources().getString(R.string.type_gravity));
+        //sensorTypes.add(getResources().getString(R.string.type_light));
         ArrayList<Integer> valuesNumber = new ArrayList<>();
         valuesNumber.add(3);
         valuesNumber.add(3);
         valuesNumber.add(3);
-        valuesNumber.add(1);
+        //valuesNumber.add(1);
 
 
         linearLayouts = new ArrayList<>();
@@ -52,17 +52,14 @@ public class MainActivity extends AppCompatActivity {
         screenWidth = size.x;
         screenHeight = size.y;
 
-        //  if (savedInstanceState==null){
         Intent intent = new Intent(this, DataCollectonService.class);
         intent.putStringArrayListExtra(INTENT_KEY_TYPES, sensorTypes);
         intent.putIntegerArrayListExtra(INTENT_KEY_NUMBERS, valuesNumber);
-
         startService(intent);
+
         for (int i = 0; i < sensorTypes.size(); i++) {
             addGraphFragment(i, sensorTypes.get(i), valuesNumber.get(i));
         }
-        //}
-
 
     }
 
@@ -73,13 +70,8 @@ public class MainActivity extends AppCompatActivity {
                 .newInstance(i, sensorType, valuesNumber), "someTag" + i).commit();
         container.addView(linearLayouts.get(i));
         setLayoutSize(i, screenWidth, ViewGroup.LayoutParams.MATCH_PARENT);
-
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
 
     @Override
     protected void onDestroy() {
@@ -100,15 +92,14 @@ public class MainActivity extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             container.setOrientation(LinearLayout.HORIZONTAL);
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < sensorTypes.size(); i++) {
                 setLayoutSize(i, screenHeight / 2, screenWidth / 2);
             }
         }
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             container.setOrientation(LinearLayout.VERTICAL);
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < sensorTypes.size(); i++) {
                 setLayoutSize(i, screenWidth, ViewGroup.LayoutParams.MATCH_PARENT);
-
             }
         }
     }
